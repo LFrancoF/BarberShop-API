@@ -6,9 +6,9 @@ const router = Router()
 
 router.get('/barbers', authRequired, getBarbers)
 
-router.get('/barbers/:id', authRequired, getBarber)
-
 router.post('/barbers', authRequired, createBarber)
+
+router.get('/barbers/:id', authRequired, getBarber)
 
 router.put('/barbers/:id', authRequired, editBarber)
 

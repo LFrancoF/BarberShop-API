@@ -99,11 +99,11 @@ export const deleteBarber = async (req, res) => {
     try {
         const newBarber = new Barbero({idUsuario : id})
         const deletedBarber = await newBarber.deleteBarberoByIdUsuario()
-        if (!deletedBarber) return res.status(500).json({message : "No se pudo eliminar el barbero"})
+        if (deletedBarber.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar el barbero"})
 
         const newUser = new Usuario({idUsuario : id})
         const deletedUser = await newUser.deleteUsuarioByIdUsuario()
-        if (!deletedUser) return res.status(500).json({message : "No se pudo eliminar la cuenta de usuario"})
+        if (deletedUser.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar la cuenta de usuario"})
 
         return res.sendStatus(200);
 

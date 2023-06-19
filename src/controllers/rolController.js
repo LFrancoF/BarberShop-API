@@ -70,7 +70,7 @@ export const deleteRole = async (req, res) => {
     try {
         const newRole = new Rol({idRol : id})
         const deletedRole = await newRole.deleteRolById()
-        if (!deletedRole) return res.status(500).json({message : "No se pudo eliminar el rol"})
+        if (deletedRole.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar el rol indicado"})
 
         return res.sendStatus(200);
 

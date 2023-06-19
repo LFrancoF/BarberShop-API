@@ -25,9 +25,9 @@ export let Barbero = class extends Usuario{
     async getBarberos(){
         try {
             const query = 'SELECT u.idUsuario, u.nombre as nombre, u.apellido, u.telefono, u.email, r.nombre as rol, b.especialidad '
-                        +'FROM barbero b '
-                        +'JOIN usuario u ON b.idUsuario = u.idUsuario '
-                        +'JOIN rol r ON u.idRol = r.idRol'
+                        + 'FROM barbero b '
+                        + 'JOIN usuario u ON b.idUsuario = u.idUsuario '
+                        + 'JOIN rol r ON u.idRol = r.idRol'
             const [result] = await pool.query(query)
             return result;
             
@@ -36,29 +36,13 @@ export let Barbero = class extends Usuario{
         }
     }
 
-    async getBarberoById(){
-        try {
-            const query = 'SELECT u.idUsuario, u.nombre as nombre, u.apellido, u.telefono, u.email, r.nombre as rol, b.especialidad '
-                        +'FROM barbero b '
-                        +'JOIN usuario u ON b.idUsuario = u.idUsuario '
-                        +'JOIN rol r ON u.idRol = r.idRol '
-                        +'WHERE b.idUsuario = ?';
-            const values = [this.idUsuario]
-            const [result] = await pool.query(query, values)
-            return result[0];
-            
-        } catch (error) {
-            throw new Error('Error al obtener el barbero: ' + error.message);
-        }
-    }
-
     async getBarberoByIdUsuario(){
         try {
             const query = 'SELECT u.idUsuario, u.nombre as nombre, u.apellido, u.telefono, u.email, u.created_at, r.nombre as rol, b.especialidad '
-                        +'FROM barbero b '
-                        +'JOIN usuario u ON b.idUsuario = u.idUsuario '
-                        +'JOIN rol r ON u.idRol = r.idRol '
-                        +'WHERE b.idUsuario = ?';
+                        + 'FROM barbero b '
+                        + 'JOIN usuario u ON b.idUsuario = u.idUsuario '
+                        + 'JOIN rol r ON u.idRol = r.idRol '
+                        + 'WHERE b.idUsuario = ?';
             const values = [this.idUsuario]
             const [result] = await pool.query(query, values)
             return result[0];

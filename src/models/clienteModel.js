@@ -25,9 +25,9 @@ export let Cliente = class extends Usuario{
     async getClientes(){
         try {
             const query = 'SELECT u.idUsuario, u.nombre as nombre, u.apellido, u.telefono, u.email, r.nombre as rol, c.preferencia '
-                        +'FROM cliente c '
-                        +'JOIN usuario u ON c.idUsuario = u.idUsuario '
-                        +'JOIN rol r ON u.idRol = r.idRol'
+                        + 'FROM cliente c '
+                        + 'JOIN usuario u ON c.idUsuario = u.idUsuario '
+                        + 'JOIN rol r ON u.idRol = r.idRol'
             const [result] = await pool.query(query)
             return result;
             
@@ -39,10 +39,10 @@ export let Cliente = class extends Usuario{
     async getClienteByIdUsuario(){
         try {
             const query = 'SELECT u.idUsuario, u.nombre as nombre, u.apellido, u.telefono, u.email, u.created_at, r.nombre as rol, c.preferencia '
-                        +'FROM cliente c '
-                        +'JOIN usuario u ON c.idUsuario = u.idUsuario '
-                        +'JOIN rol r ON u.idRol = r.idRol '
-                        +'WHERE c.idUsuario = ?';
+                        + 'FROM cliente c '
+                        + 'JOIN usuario u ON c.idUsuario = u.idUsuario '
+                        + 'JOIN rol r ON u.idRol = r.idRol '
+                        + 'WHERE c.idUsuario = ?';
             const values = [this.idUsuario]
             const [result] = await pool.query(query, values)
             return result[0];

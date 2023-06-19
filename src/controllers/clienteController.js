@@ -98,11 +98,11 @@ export const deleteClient = async (req, res) => {
     try {
         const newClient = new Cliente({idUsuario : id})
         const deletedClient = await newClient.deleteClienteByIdUsuario()
-        if (!deletedClient) return res.status(500).json({message : "No se pudo eliminar el cliente"})
+        if (deletedClient.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar el cliente indicado"})
 
         const newUser = new Usuario({idUsuario : id})
         const deletedUser = await newUser.deleteUsuarioByIdUsuario()
-        if (!deletedUser) return res.status(500).json({message : "No se pudo eliminar la cuenta de usuario"})
+        if (deletedUser.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar la cuenta de usuario indicada"})
 
         return res.sendStatus(200);
 

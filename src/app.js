@@ -16,5 +16,7 @@ app.use('/api', myRoutes.authRoutes);
 app.use('/api', myRoutes.clientRoutes);
 app.use('/api', myRoutes.barberRoutes);
 app.use('/api', myRoutes.roleRoutes);
+app.use('/api', myRoutes.categorieRoutes);
+app.use('/api', myRoutes.serviceRoutes);
 
 export default app;
