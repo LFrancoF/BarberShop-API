@@ -4,7 +4,7 @@ import { authRequired } from "../middlewares/validateToken.js";
 
 const router = Router()
 
-router.post('/formrecomend', authRequired, createRecomend)
+router.post('/formrecomend', createRecomend)
 
 
 export default router

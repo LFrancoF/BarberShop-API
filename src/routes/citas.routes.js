@@ -4,17 +4,17 @@ import { authRequired } from "../middlewares/validateToken.js";
 
 const router = Router()
 
-router.get('/citas', authRequired, getAllCitas)
+router.get('/citas', getAllCitas)
 
-router.get('/citas/:id/:user', authRequired, getMyCitas)
+router.get('/citas/:id/:user', getMyCitas)
 
-router.get('/citas/:id', authRequired, getCita)
+router.get('/citas/:id', getCita)
 
-router.post('/citas', authRequired, createCita)
+router.post('/citas', createCita)
 
-router.put('/citas/:id', authRequired, editCita)
+router.put('/citas/:id', editCita)
 
-router.delete('/citas/:id', authRequired, deleteCita)
+router.delete('/citas/:id', deleteCita)
 
 
 export default router

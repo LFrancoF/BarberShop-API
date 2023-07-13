@@ -4,15 +4,15 @@ import { authRequired } from "../middlewares/validateToken.js";
 
 const router = Router()
 
-router.get('/categories', authRequired, getCategorias)
+router.get('/categories', getCategorias)
 
-router.post('/categories', authRequired, createCategoria)
+router.post('/categories', createCategoria)
 
-router.get('/categories/:id', authRequired, getCategoria)
+router.get('/categories/:id', getCategoria)
 
-router.put('/categories/:id', authRequired, editCategoria)
+router.put('/categories/:id', editCategoria)
 
-router.delete('/categories/:id', authRequired, deleteCategoria)
+router.delete('/categories/:id', deleteCategoria)
 
 
 export default router
