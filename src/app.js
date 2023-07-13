@@ -1,5 +1,4 @@
 import express from 'express';
-import session from 'express-session';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -15,18 +14,6 @@ app.use(cors({
     credentials: true
 }));
 
-// app.use(
-//     session({
-//         resave: false,
-//         saveUninitialized: false,
-//         secret: 'session',
-//         cookie: {
-//             maxAge: 1000 * 60 * 60,
-//             sameSite: 'none',
-//             secure: true,
-//         }
-//     })
-// )
 
 app.use(morgan('dev'));
 app.use(express.json({ limit: '20mb' }));
