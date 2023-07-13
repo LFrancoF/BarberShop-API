@@ -18,13 +18,13 @@ export let Barbero = class extends Usuario{
             const [barberSaved] = await pool.query(queryID, [result.insertId]);
             return barberSaved[0];
         } catch (error) {
-            throw new Error('Error al crear el barbero: ' + error.message);
+            throw new Error(['Error al crear el barbero: ' + error.message]);
         }
     }
 
     async getBarberos(){
         try {
-            const query = 'SELECT u.idUsuario, u.nombre as nombre, u.apellido, u.telefono, u.email, r.nombre as rol, b.especialidad '
+            const query = 'SELECT u.idUsuario, b.idBarbero, u.nombre as nombre, u.apellido, u.telefono, u.email, r.nombre as rol, b.especialidad '
                         + 'FROM barbero b '
                         + 'JOIN usuario u ON b.idUsuario = u.idUsuario '
                         + 'JOIN rol r ON u.idRol = r.idRol'
@@ -32,7 +32,7 @@ export let Barbero = class extends Usuario{
             return result;
             
         } catch (error) {
-            throw new Error('Error al obtener los barberos: ' + error.message);
+            throw new Error(['Error al obtener los barberos: ' + error.message]);
         }
     }
 
@@ -48,7 +48,7 @@ export let Barbero = class extends Usuario{
             return result[0];
             
         } catch (error) {
-            throw new Error('Error al obtener el barbero: ' + error.message);
+            throw new Error(['Error al obtener el barbero: ' + error.message]);
         }
     }
 
@@ -63,7 +63,7 @@ export let Barbero = class extends Usuario{
             const [barberEdited] = await pool.query(queryID, [this.idUsuario]);
             return barberEdited[0];
         } catch (error) {
-            throw new Error('Error al editar el barbero: ' + error.message);
+            throw new Error(['Error al editar el barbero: ' + error.message]);
         }
     }
 
@@ -74,7 +74,7 @@ export let Barbero = class extends Usuario{
         const [deleted] = await pool.query(query, values)
         return deleted;
         } catch (error) {
-            throw new Error('Error al eliminar el barbero: ' + error.message);
+            throw new Error(['Error al eliminar el barbero: ' + error.message]);
         }
     }
 }

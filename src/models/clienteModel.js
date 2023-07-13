@@ -18,13 +18,13 @@ export let Cliente = class extends Usuario{
             const [clientSaved] = await pool.query(queryID, [result.insertId]);
             return clientSaved[0];
         } catch (error) {
-            throw new Error('Error al crear el cliente: ' + error.message);
+            throw new Error(['Error al crear el cliente: ' + error.message]);
         }
     }
 
     async getClientes(){
         try {
-            const query = 'SELECT u.idUsuario, u.nombre as nombre, u.apellido, u.telefono, u.email, r.nombre as rol, c.preferencia '
+            const query = 'SELECT u.idUsuario, c.idCliente, u.nombre as nombre, u.apellido, u.telefono, u.email, r.nombre as rol, c.preferencia '
                         + 'FROM cliente c '
                         + 'JOIN usuario u ON c.idUsuario = u.idUsuario '
                         + 'JOIN rol r ON u.idRol = r.idRol'
@@ -32,7 +32,7 @@ export let Cliente = class extends Usuario{
             return result;
             
         } catch (error) {
-            throw new Error('Error al obtener los clientes: ' + error.message);
+            throw new Error(['Error al obtener los clientes: ' + error.message]);
         }
     }
     
@@ -48,7 +48,7 @@ export let Cliente = class extends Usuario{
             return result[0];
             
         } catch (error) {
-            throw new Error('Error al obtener el cliente: ' + error.message);
+            throw new Error(['Error al obtener el cliente: ' + error.message]);
         }
     }
 
@@ -63,7 +63,7 @@ export let Cliente = class extends Usuario{
             const [clientEdited] = await pool.query(queryID, [this.idUsuario]);
             return clientEdited[0];
         } catch (error) {
-            throw new Error('Error al editar el cliente: ' + error.message);
+            throw new Error(['Error al editar el cliente: ' + error.message]);
         }
     }
 
@@ -74,7 +74,7 @@ export let Cliente = class extends Usuario{
             const [deleted] = await pool.query(query, values)
             return deleted;
         } catch (error) {
-            throw new Error('Error al eliminar el cliente: ' + error.message);
+            throw new Error(['Error al eliminar el cliente: ' + error.message]);
         }
         
     }

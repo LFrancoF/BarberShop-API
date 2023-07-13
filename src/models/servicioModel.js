@@ -1,9 +1,10 @@
 import {pool} from '../db.js'
 
 export let Servicio = class{
-    constructor({idServicio, nombre, precio, duracion, descripcion, idCategoria} = {}){
+    constructor({idServicio, nombre, imagen, precio, duracion, descripcion, idCategoria} = {}){
         this.idServicio = idServicio;
         this.nombre = nombre;
+        this.imagen = imagen;
         this.precio = precio;
         this.duracion = duracion;
         this.descripcion = descripcion;
@@ -12,12 +13,12 @@ export let Servicio = class{
 
     async createServicio(){
         try {
-            const query = 'INSERT INTO servicio (nombre, precio, duracion, descripcion, idCategoria) VALUES (?,?,?,?,?)';
-            const values = [this.nombre, this.precio, this.duracion, this.descripcion, this.idCategoria]
+            const query = 'INSERT INTO servicio (nombre, imagen, precio, duracion, descripcion, idCategoria) VALUES (?,?,?,?,?,?)';
+            const values = [this.nombre, this.imagen, this.precio, this.duracion, this.descripcion, this.idCategoria]
             const [result] = await pool.query(query, values)
 
             //return created register
-            const queryID =   'SELECT s.nombre, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
+            const queryID =   'SELECT s.nombre, s.imagen, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
                             + 'FROM servicio s '
                             + 'JOIN categoria c ON s.idCategoria = c.idCategoria '
                             + 'WHERE s.idServicio = ?';
@@ -30,7 +31,7 @@ export let Servicio = class{
 
     async getServicios(){
         try {
-            const query = 'SELECT s.nombre, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
+            const query = 'SELECT s.idServicio, s.nombre, s.imagen, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
                         + 'FROM servicio s '
                         + 'JOIN categoria c ON s.idCategoria = c.idCategoria';
             const [result] = await pool.query(query)
@@ -43,7 +44,7 @@ export let Servicio = class{
 
     async getServicioById(){
         try {
-            const query = 'SELECT s.nombre, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
+            const query = 'SELECT s.nombre, s.imagen, c.idCategoria, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
                         + 'FROM servicio s '
                         + 'JOIN categoria c ON s.idCategoria = c.idCategoria '
                         + 'WHERE s.idServicio = ?'
@@ -58,12 +59,18 @@ export let Servicio = class{
 
     async editServicioById(){
         try {
-            const query = 'UPDATE servicio SET nombre=?, precio=?, duracion=?, descripcion=?, idCategoria=? WHERE idServicio = ?';
-            const values = [this.nombre, this.precio, this.duracion, this.descripcion, this.idCategoria, this.idServicio]
-            await pool.query(query, values)
+            if (this.imagen){
+                const query = 'UPDATE servicio SET nombre=?, imagen=?, precio=?, duracion=?, descripcion=?, idCategoria=? WHERE idServicio = ?';
+                const values = [this.nombre, this.imagen, this.precio, this.duracion, this.descripcion, this.idCategoria, this.idServicio]
+                await pool.query(query, values)
+            }else{
+                const query = 'UPDATE servicio SET nombre=?, precio=?, duracion=?, descripcion=?, idCategoria=? WHERE idServicio = ?';
+                const values = [this.nombre, this.precio, this.duracion, this.descripcion, this.idCategoria, this.idServicio]
+                await pool.query(query, values)
+            }
 
             //return updated register
-            const queryID =   'SELECT s.nombre, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
+            const queryID =   'SELECT s.nombre, s.imagen, c.nombre as categoria, s.precio, s.duracion, s.descripcion '
                             + 'FROM servicio s '
                             + 'JOIN categoria c ON s.idCategoria = c.idCategoria '
                             + 'WHERE s.idServicio = ?';

@@ -3,9 +3,13 @@ import { Barbero } from '../models/barberoModel.js'
 import bcrypt from "bcryptjs"
 
 export const getBarbers = async (req, res) => {
-    const barber = new Barbero()
-    const allBarbers = await barber.getBarberos()
-    res.json(allBarbers)
+    try {
+        const barber = new Barbero()
+        const allBarbers = await barber.getBarberos()
+        res.json(allBarbers)
+    } catch (error) {
+        res.status(500).json([error.message]);
+    }
 }
 
 export const createBarber = async (req, res) => {
@@ -21,7 +25,7 @@ export const createBarber = async (req, res) => {
         const userSaved = await newUser.createUsuario()
         newUser.idUsuario = userSaved.idUsuario
 
-        if (!req.body.especialidad) return res.status(500).json({message : "No se pudo crear barbero, no hay especialidad"})
+        if (!req.body.especialidad) return res.status(500).json(["No se pudo crear barbero, no hay especialidad"])
         //create a Barber instance to insert in DB
         const newBarber = new Barbero({
             especialidad: req.body.especialidad, idUsuario: newUser.idUsuario
@@ -36,7 +40,7 @@ export const createBarber = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -46,7 +50,7 @@ export const getBarber = async (req, res) => {
     try {
         const newBarber = new Barbero({idUsuario : id})
         const barberFound = await newBarber.getBarberoByIdUsuario()
-        if (!barberFound) return res.status(400).json({message : "Barbero no encontrado"})
+        if (!barberFound) return res.status(400).json(["Barbero no encontrado"])
 
         res.json({
             id : barberFound.idUsuario,
@@ -58,7 +62,7 @@ export const getBarber = async (req, res) => {
             especialidad : barberFound.especialidad
         })
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -89,7 +93,7 @@ export const editBarber = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -99,15 +103,15 @@ export const deleteBarber = async (req, res) => {
     try {
         const newBarber = new Barbero({idUsuario : id})
         const deletedBarber = await newBarber.deleteBarberoByIdUsuario()
-        if (deletedBarber.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar el barbero"})
+        if (deletedBarber.affectedRows == 0) return res.status(500).json(["No se pudo eliminar el barbero"])
 
         const newUser = new Usuario({idUsuario : id})
         const deletedUser = await newUser.deleteUsuarioByIdUsuario()
-        if (deletedUser.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar la cuenta de usuario"})
+        if (deletedUser.affectedRows == 0) return res.status(500).json(["No se pudo eliminar la cuenta de usuario"])
 
         return res.sendStatus(200);
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }

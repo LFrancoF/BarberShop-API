@@ -1,9 +1,13 @@
 import { Rol } from '../models/rolModel.js'
 
 export const getRoles = async (req, res) => {
-    const role = new Rol()
-    const allRoles = await role.getRoles()
-    res.json(allRoles)
+    try {
+        const role = new Rol()
+        const allRoles = await role.getRoles()
+        res.json(allRoles)
+    } catch (error) {
+        res.status(500).json([error.message]);
+    }
 }
 
 export const createRole = async (req, res) => {
@@ -22,7 +26,7 @@ export const createRole = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -32,14 +36,14 @@ export const getRole = async (req, res) => {
     try {
         const newRole = new Rol({idRol : id})
         const roleFound = await newRole.getRolById()
-        if (!roleFound) return res.status(400).json({message : "Rol no encontrado"})
+        if (!roleFound) return res.status(400).json(["Rol no encontrado"])
 
         res.json({
             nombre : roleFound.nombre,
             descripcion : roleFound.descripcion
         })
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -60,7 +64,7 @@ export const editRole = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -70,11 +74,11 @@ export const deleteRole = async (req, res) => {
     try {
         const newRole = new Rol({idRol : id})
         const deletedRole = await newRole.deleteRolById()
-        if (deletedRole.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar el rol indicado"})
+        if (deletedRole.affectedRows == 0) return res.status(500).json(["No se pudo eliminar el rol indicado"])
 
         return res.sendStatus(200);
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }

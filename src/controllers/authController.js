@@ -2,6 +2,8 @@ import { Usuario } from '../models/usuarioModel.js'
 import { Barbero } from '../models/barberoModel.js'
 import { Cliente } from '../models/clienteModel.js'
 import bcrypt from "bcryptjs"
+import jwt from 'jsonwebtoken'
+import { TOKEN_SECRET } from "../config.js"
 import { createAccesToken } from "../libs/jwt.js"
 
 export const register = async (req, res) => {
@@ -17,13 +19,46 @@ export const register = async (req, res) => {
 
         const userSaved = await newUser.createUsuario()
 
+        //verify if email already exists
+        if (userSaved == "El email ingresado ya existe") return res.status(409).json([userSaved]);
+
         newUser.idUsuario = userSaved.idUsuario
+
+        //create token for user
+        const token = await createAccesToken({id : userSaved.idUsuario})
+        res.cookie('token', token)
+
+        //if role is Admin send user data
+        if (idRol == 1){
+            res.json({
+                id : userSaved.idUsuario,
+                nombre : userSaved.nombre,
+                apellido : userSaved.apellido,
+                email : userSaved.email,
+                telefono : userSaved.telefono,
+                rol : "Administrador",
+            })
+        }
+
         //if Role is Barber, create a Barber subClass instance
-        if (idRol == 2 && req.body.especialidad){
+        if (idRol == 2){
+            if (!req.body.especialidad){
+                await newUser.deleteUsuarioByIdUsuario()
+                return res.status(400).json(["Ingrese una especialidad"]);
+            } 
             const newBarber = new Barbero({
                 especialidad: req.body.especialidad, idUsuario: newUser.idUsuario
             })
             const barberSaved = await newBarber.createBarbero()
+            res.json({
+                id : userSaved.idUsuario,
+                nombre : userSaved.nombre,
+                apellido : userSaved.apellido,
+                email : userSaved.email,
+                telefono : userSaved.telefono,
+                rol : "Barbero",
+                especialidad : barberSaved.especialidad
+            })
         }
 
         //if Role is Client, create a Client subClass instance
@@ -32,20 +67,18 @@ export const register = async (req, res) => {
                 preferencia: req.body.preferencia, idUsuario: newUser.idUsuario
             })
             const clienteSaved = await newClient.createCliente()
+            res.json({
+                id : userSaved.idUsuario,
+                nombre : userSaved.nombre,
+                apellido : userSaved.apellido,
+                email : userSaved.email,
+                telefono : userSaved.telefono,
+                rol : "Cliente",
+                preferencia : clienteSaved.preferencia
+            })
         }
-
-        //create token for user
-        const token = await createAccesToken({id : userSaved.idUsuario})
-        res.cookie('token', token)
-        
-        res.json({
-            id : userSaved.idUsuario,
-            nombre : userSaved.nombre,
-            apellido : userSaved.apellido,
-            email : userSaved.email
-        })
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
     
 }
@@ -54,72 +87,68 @@ export const login = async (req, res) => {
     const {email, password} = req.body
 
     try {
-
+        
         const newUser = new Usuario({
             email
         })
 
         const userFound = await newUser.getUsuarioByEmail()
 
-        if (!userFound) return res.status(400).json({message : "Email incorrecto"})
+        if (!userFound) return res.status(400).json(["Email incorrecto"])
 
         const passMatched = await bcrypt.compare(password, userFound.password)
 
-        if (!passMatched) return res.status(400).json({message : "Contraseña incorrecta"})
+        if (!passMatched) return res.status(400).json(["Contraseña incorrecta"])
 
         //create token for user
         const token = await createAccesToken({id : userFound.idUsuario})
         res.cookie('token', token)
 
-        //if Admin rol, get the userFound data
-        if (userFound.idRol == 1) {
-            res.json({
-                id :userFound.idUsuario,
+        //Get idBarber or idClient
+        const userWithRol = new Usuario({
+            idUsuario: userFound.idUsuario
+        })
+
+        if (userFound.rol == "Barbero"){
+            const userIdBarber = await userWithRol.getIdBarber()
+            return res.json({
+                id : userFound.idUsuario,
+                idBarbero : userIdBarber.idBarbero,
                 nombre : userFound.nombre,
                 apellido : userFound.apellido,
                 telefono : userFound.telefono,
                 email : userFound.email,
-                rol : 'Administrador'
+                rol : userFound.rol,
+                token : token
             })
         }
 
-        newUser.idUsuario = userFound.idUsuario
-        //if Role is Client, get the Client subClass instance
-        if (userFound.idRol == 3){
-            const newClient = new Cliente({
-                idUsuario : newUser.idUsuario
-            })
-            const clienteFound = await newClient.getClienteByIdUsuario()
-            res.json({
-                id : clienteFound.idUsuario,
-                nombre : clienteFound.nombre,
-                apellido : clienteFound.apellido,
-                telefono : clienteFound.telefono,
-                email : clienteFound.email,
-                rol : clienteFound.rol,
-                preferencia : clienteFound.preferencia
+        if (userFound.rol == "Cliente"){
+            const userIdClient = await userWithRol.getIdClient()
+            return res.json({
+                id : userFound.idUsuario,
+                idCliente : userIdClient.idCliente,
+                nombre : userFound.nombre,
+                apellido : userFound.apellido,
+                telefono : userFound.telefono,
+                email : userFound.email,
+                rol : userFound.rol,
+                token : token
             })
         }
 
-        //if Role is Barber, get the Barber subClass instance
-        if (userFound.idRol == 2){
-            const newBarber = new Barbero({
-                idUsuario : newUser.idUsuario
-            })
-            const barberFound = await newBarber.getBarberoById()
-            res.json({
-                id : barberFound.idUsuario,
-                nombre : barberFound.nombre,
-                apellido : barberFound.apellido,
-                telefono : barberFound.telefono,
-                email : barberFound.email,
-                rol : barberFound.rol,
-                especialidad : barberFound.especialidad
-            })
-        }
+        res.json({
+            id : userFound.idUsuario,
+            nombre : userFound.nombre,
+            apellido : userFound.apellido,
+            telefono : userFound.telefono,
+            email : userFound.email,
+            rol : userFound.rol,
+            token : token
+        })
         
     } catch (error) {
-        res.status(500).json({ message : "Error en: " + error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -128,6 +157,26 @@ export const logout = (req, res) => {
         expires: new Date(0)
     })
     return res.sendStatus(200);
+}
+
+export const verifyToken = (req, res) => {
+    const { token } = req.cookies
+    if (!token) return res.status(401).json(["Sin autorizacion"])
+
+    jwt.verify(token, TOKEN_SECRET, async (err, user) => {
+        if (err) return res.status(401).json(["No tiene autorizacion"])
+        const newUser = new Usuario( {idUsuario : user.id})
+        const userFound = await newUser.getUsuarioById()
+        if (!userFound) return res.status(401).json(["Usuario no autorizado"])
+        res.json({
+            id : userFound.idUsuario,
+            nombre : userFound.nombre,
+            apellido : userFound.apellido,
+            telefono : userFound.telefono,
+            email : userFound.email,
+            rol : userFound.rol
+        })
+    })
 }
 
 export const profile = async (req, res) => {
@@ -141,7 +190,7 @@ export const profile = async (req, res) => {
         })
 
         const userFound = await newUser.getUsuarioById()
-        if (!userFound) return res.status(400).json({message : "Usuario no encontrado"})
+        if (!userFound) return res.status(400).json(["Usuario no encontrado"])
 
         return res.json({
             id : userFound.idUsuario,
@@ -153,6 +202,6 @@ export const profile = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }

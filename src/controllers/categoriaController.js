@@ -1,9 +1,13 @@
 import { Categoria } from '../models/categoriaModel.js'
 
 export const getCategorias = async (req, res) => {
-    const categoria = new Categoria()
-    const allCategorias = await categoria.getCategorias()
-    res.json(allCategorias)
+    try {
+        const categoria = new Categoria()
+        const allCategorias = await categoria.getCategorias()
+        res.json(allCategorias)
+    } catch (error) {
+        res.status(500).json([error.message]);
+    }
 }
 
 export const createCategoria = async (req, res) => {
@@ -22,7 +26,7 @@ export const createCategoria = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -32,14 +36,11 @@ export const getCategoria = async (req, res) => {
     try {
         const newCategoria = new Categoria({idCategoria : id})
         const categoriaFound = await newCategoria.getCategoriaById()
-        if (!categoriaFound) return res.status(400).json({message : "Categoria no encontrada"})
+        if (!categoriaFound) return res.status(400).json(["Categoria no encontrada"])
 
-        res.json({
-            nombre : categoriaFound.nombre,
-            descripcion : categoriaFound.descripcion
-        })
+        res.json(categoriaFound)
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -60,7 +61,7 @@ export const editCategoria = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -71,11 +72,11 @@ export const deleteCategoria = async (req, res) => {
         const newCategoria = new Categoria({idCategoria : id})
         const deletedCategoria = await newCategoria.deleteCategoriaById()
 
-        if (deletedCategoria.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar la categoria indicada"})
+        if (deletedCategoria.affectedRows == 0) return res.status(500).json(["No se pudo eliminar la categoria indicada"])
 
         return res.sendStatus(200);
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }

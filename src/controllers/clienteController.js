@@ -3,9 +3,13 @@ import { Cliente } from '../models/clienteModel.js'
 import bcrypt from "bcryptjs"
 
 export const getClients = async (req, res) => {
-    const client = new Cliente()
-    const allClients = await client.getClientes()
-    res.json(allClients)
+    try {
+        const client = new Cliente()
+        const allClients = await client.getClientes()
+        res.json(allClients)
+    } catch (error) {
+        res.status(500).json([error.message]);
+    }
 }
 
 export const createClient = async (req, res) => {
@@ -35,7 +39,7 @@ export const createClient = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -45,7 +49,7 @@ export const getClient = async (req, res) => {
     try {
         const newClient = new Cliente({idUsuario : id})
         const clientFound = await newClient.getClienteByIdUsuario()
-        if (!clientFound) return res.status(400).json({message : "Cliente no encontrado"})
+        if (!clientFound) return res.status(400).json(["Cliente no encontrado"])
 
         res.json({
             id : clientFound.idUsuario,
@@ -57,7 +61,7 @@ export const getClient = async (req, res) => {
             preferencia : clientFound.preferencia
         })
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -88,7 +92,7 @@ export const editClient = async (req, res) => {
         })
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
 
@@ -98,15 +102,15 @@ export const deleteClient = async (req, res) => {
     try {
         const newClient = new Cliente({idUsuario : id})
         const deletedClient = await newClient.deleteClienteByIdUsuario()
-        if (deletedClient.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar el cliente indicado"})
+        if (deletedClient.affectedRows == 0) return res.status(500).json(["No se pudo eliminar el cliente indicado"])
 
         const newUser = new Usuario({idUsuario : id})
         const deletedUser = await newUser.deleteUsuarioByIdUsuario()
-        if (deletedUser.affectedRows == 0) return res.status(500).json({message : "No se pudo eliminar la cuenta de usuario indicada"})
+        if (deletedUser.affectedRows == 0) return res.status(500).json(["No se pudo eliminar la cuenta de usuario indicada"])
 
         return res.sendStatus(200);
 
     } catch (error) {
-        res.status(500).json({ message : error.message });
+        res.status(500).json([error.message]);
     }
 }
