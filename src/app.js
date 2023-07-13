@@ -10,7 +10,7 @@ const app = express();
 createAdminAndRoles();
 
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://barbershop-classic.up.railway.app'],
     credentials: true
 }));
 app.use(morgan('dev'));
