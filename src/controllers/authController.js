@@ -102,7 +102,7 @@ export const login = async (req, res) => {
 
         //create token for user
         const token = await createAccesToken({id : userFound.idUsuario})
-        res.cookie('token', token, {httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000})
+        res.cookie('token', token, {httpOnly: false, sameSite: 'lax', secure: false, maxAge: 24 * 60 * 60 * 1000})
 
         //Get idBarber or idClient
         const userWithRol = new Usuario({
