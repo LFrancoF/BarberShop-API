@@ -3,7 +3,6 @@ import {config} from 'dotenv'
 
 config()
 
-console.log(process.env.DB_PASSWORD)
 export const pool = createPool({
     host: process.env.DB_HOST || 'localhost', 
     user: process.env.DB_USER || 'root',
