@@ -4,15 +4,15 @@ import { authRequired } from "../middlewares/validateToken.js";
 
 const router = Router()
 
-router.get('/users', getUsers)
+router.get('/users', authRequired, getUsers)
 
-router.post('/users', createUser)
+router.post('/users', authRequired, createUser)
 
-router.get('/users/:id', getUser)
+router.get('/users/:id', authRequired, getUser)
 
-router.put('/users/:id', editUser)
+router.put('/users/:id', authRequired, editUser)
 
-router.delete('/users/:id', deleteUser)
+router.delete('/users/:id', authRequired, deleteUser)
 
 
 export default router

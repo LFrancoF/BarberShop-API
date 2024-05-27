@@ -14,6 +14,6 @@ router.post('/logout', logout)
 
 router.get('/verifyToken', verifyToken)
 
-router.get('/profile', profile)
+router.get('/profile', authRequired, profile)
 
 export default router

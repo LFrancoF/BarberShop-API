@@ -10,4 +10,3 @@ export const pool = createPool({
     port: process.env.DB_PORT || 3306,
     database: process.env.DB_DATABASE || 'classic_barbershop'
 })
-

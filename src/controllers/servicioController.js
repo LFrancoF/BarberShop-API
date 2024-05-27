@@ -5,6 +5,7 @@ export const getServicios = async (req, res) => {
     try {
         const servicio = new Servicio()
         const allServicios = await servicio.getServicios()
+        console.log(allServicios)
         res.json(allServicios)
     } catch (error) {
         res.status(500).json([error.message]);
